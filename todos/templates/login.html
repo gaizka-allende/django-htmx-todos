@@ -1,4 +1,4 @@
-{% extends "document.html" %}
+{% extends "screen.html" %}
 {% block title %}
 <title>Login</title>
 {% endblock %}
@@ -8,10 +8,8 @@
           hx-target="#screen"
           hx-swap="innerHTML"
           class="mb-4 md:w-[300px]"
-          hx-target-401="#error"
-          hx-target-400="#error"
+          hx-target-error="#error"
           hx-disabled-elt="input[type='text'], button"
-          hx-replace-url="/loading"
           hx-on::before-request="
             document.getElementById('loading')?.classList.remove('hidden')
           "
@@ -20,7 +18,7 @@
         "
         >
           <div class="mb-2 flex items-center justify-between">
-            <label for="username" class="md:mr-2">{t('username')}</label>
+            <label for="username" class="md:mr-2">Username</label>
             <input
               type="text"
               id="username"
@@ -30,7 +28,7 @@
             />
           </div>
           <div class="mb-2 flex items-center justify-between">
-            <label for="password" class="md:mr-2">{t('password')}</label>
+            <label for="password" class="md:mr-2">Password</label>
             <input
               type="password"
               id="password"
@@ -45,7 +43,7 @@
               type="submit"
               class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2 text-center disabled:cursor-not-allowed disabled:opacity-25"
             >
-              {t('login')}
+              Login
             </button>
           </div>
           <div id="error" class="text-red-500 text-sm"></div>

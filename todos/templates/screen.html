@@ -1,0 +1,13 @@
+{% extends "document.html" %}
+{% block title %}
+{% endblock %}
+{% block main %}
+  <div
+        id="screen"
+        class="mt-[50px] lg:mt-[100px] mb-0 mx-auto md:w-[600px] relative"
+        hx-ext="response-targets"
+      >
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}

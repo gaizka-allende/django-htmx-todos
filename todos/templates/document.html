@@ -1,12 +1,36 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-<head>
-<meta charset="utf-8">
-{% block title %}
-{% endblock %}
-</head>
+<!doctype html>
+    <html
+      _="on load 
+        if localStorage.theme is not empty
+          if localStorage.theme equals 'dark'
+            set @class to 'dark'
+          else if localStorage.theme equals 'light'
+            set @class to 'light'
+          else if localStorage.theme equals 'system'
+            if window.matchMedia('(prefers-color-scheme: dark)').matches
+              set @class to 'dark'
+            end
+          end
+        else if window.matchMedia('(prefers-color-scheme: dark)').matches
+          set @class to 'dark'
+        end
+      end
+    "
+    >
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/response-targets.js"></script>
+        <script src="https://unpkg.com/hyperscript.org@0.9.12/dist/_hyperscript.min.js"></script>
+        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+        {% block title %}
+        {% endblock %}
+      </head>
+      <body class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
 <body>
-{% block content %}
-{% endblock %}
+  <main>
+    {% block main %}
+    {% endblock %}
+  </main>
 </body>
 </html>
