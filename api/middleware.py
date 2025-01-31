@@ -11,12 +11,12 @@ def sessionMiddleware(get_response):
           return response
 
         if (request.get_full_path() in ['/login', '/logout', '/register', '/language']):
-          if (request.session.get('username') is not None):
+          if (request.user.is_authenticated):
             return redirect('/')
           else:
             return response
 
-        if (request.session.get('username') is not None):
+        if (request.user.is_authenticated):
           return response
         else:
           return redirect('/login')

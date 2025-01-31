@@ -4,21 +4,21 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 
 
 def index(request):
   return render(request, 'index.html')
 
 @csrf_exempt 
-def login(request):
+def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user is None:
           return HttpResponse('Invalid username or password', status=404)
-        request.session['username'] = username
+        login(request, user)
         response = render(request, 'index.html')
         response['HX-Replace-Url'] = '/'
         return response
@@ -42,7 +42,7 @@ def register(request):
     user = User.objects.create_user(username=username, password=password)
     if user is None:
       return HttpResponse('Error creating user', status=500)
-    request.session['username'] = username
+    login(request, user)
     response = render(request, 'index.html')
     response['HX-Replace-Url'] = '/'
     return response
