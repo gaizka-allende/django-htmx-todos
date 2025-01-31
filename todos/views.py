@@ -1,13 +1,14 @@
 # todos/views.py
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout
 from todos.models import Logins
 from bcrypt import checkpw, hashpw, gensalt
+from django.urls import reverse
 
 def index(request):
-  return request(request, 'index.html')
+  return render(request, 'index.html')
 
 @csrf_exempt 
 def login(request):
@@ -20,7 +21,9 @@ def login(request):
         if not checkpw(password.encode(), user.password.encode()):
           return HttpResponse('Password incorrect', status=401)
         request.session['username'] = username
-        return render(request, 'loggedIn.html', {'username': username})
+        response = render(request, 'index.html')
+        response['HX-Replace-Url'] = '/'
+        return response
     elif request.method == 'GET':
       return render(request, 'login.html')
   
