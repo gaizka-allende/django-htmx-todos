@@ -40,6 +40,48 @@
         </button>
       </div>
       <div id="error-add-todo" class="text-red-500 text-sm"></div>
-      list of todos
+      {% for todo in todos %}
+        <div class="item flex row items-center mb-2">
+          <input
+            role="checkbox"
+            type="checkbox"
+            class="mr-2"
+            name="checkbox"
+            hx-patch="/todo/{{todo.id}}"
+            hx-target="#todos"
+            hx-swap="outerHTML"
+            ${completed ? 'checked' : ''}
+          />
+          <input
+            role="textbox"
+            id="{{todo.id}}"
+            class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+            value="{{todo.title}}"
+            hx-put="/todo/{{todo.id}}"
+            name="${id}"
+            ${completed ? 'disabled' : ''}
+            _="on keydown 
+          if event.key == 'Enter'
+              -- prevent the default form submission and trigger the put request
+              event.preventDefault()
+              trigger change 
+            "
+          />
+          {% if not completed %}
+            <button
+                class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+                hx-delete="/todo/{{todo.id}}"
+                hx-target="#todos"
+                hx-swap="outerHTML"
+              >
+                Delete
+            </button>
+          {% endif %}
+          <span class="mx-2 text-sm">
+            {{todo.created_modified}}
+          </span>
+        </div>
+      {% endfor%}
+
     </form>
 {% endblock %} 
