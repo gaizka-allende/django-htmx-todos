@@ -1,0 +1,21 @@
+<div
+      id="suggestions"
+      class="transition-display ease-in-out bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 mr-2
+absolute w-[75%] opacity-90 p-2.5 "
+    >
+      <ul>
+        {% for suggestion in suggestions %}
+            <li
+              class="text-base py-0.5 cursor-pointer [&:not(:last-child)]:border-b border-gray-300"
+              _="on click 
+                  put `${event.target.innerText}` into value of #title 
+                  add .hidden to #suggestions
+                end"
+            >
+              <span>
+                {{ suggestion.title}}
+              </span>
+            </li>`
+        {% endfor %}
+      </ul>
+    </div>

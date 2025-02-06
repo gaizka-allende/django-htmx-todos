@@ -6,19 +6,41 @@ from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from todos.models import Todos
+from todos.models import Todos, Suggestions
 from todos.utils.date import formatTodoDate
 
 @login_required(login_url='/login')
 def index(request):
     todos = Todos.objects.filter(user=request.user)
-    print(formatTodoDate(todos[0].created_modified))
+    #todo add completed todos
     return render(request, 'index.html', {'todos': map(lambda todo: {
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
       'created_modified': formatTodoDate(todo.created_modified)
     }, todos)})
+
+@login_required(login_url='/login')
+def todo(request):
+    #todo Forbidden (CSRF token missing.): /todo
+    if request.method == 'POST':
+      #print(request.POST.get('title'))
+      return HttpResponse('Todo')
+
+@login_required(login_url='/login')
+def suggestions(request):
+  title = request.GET.get('title')
+  suggestions = Suggestions.objects.filter(title__icontains=title)
+  print(suggestions[0].title)
+  if suggestions is None:
+    return HttpResponse('')
+  else:
+    #todo implement the highlighting of the title in the suggestion below in javascript
+    #${suggestion.slice(0, suggestion.indexOf(title))}<span
+    #  class="bg-yellow-300"
+    #  >${title}</span
+    #>${suggestion.slice(suggestion.indexOf(title) + title.length)}
+    return render(request, 'suggestions.html', {'suggestions': suggestions})
 
 @csrf_exempt 
 def login_view(request):
