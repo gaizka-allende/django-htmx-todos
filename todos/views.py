@@ -8,10 +8,13 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from todos.models import Todos, Suggestions
 from todos.utils.date import formatTodoDate
+from arrow import now
+
+#todo add translations
 
 @login_required(login_url='/login')
 def index(request):
-    todos = Todos.objects.filter(user=request.user)
+    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
     #todo add completed todos
     return render(request, 'index.html', {'todos': map(lambda todo: {
       'id': todo.id,
@@ -22,10 +25,19 @@ def index(request):
 
 @login_required(login_url='/login')
 def todo(request):
-    #todo Forbidden (CSRF token missing.): /todo
     if request.method == 'POST':
-      #print(request.POST.get('title'))
-      return HttpResponse('Todo')
+      title = request.POST.get('title')
+      todo = Todos.objects.create(user=request.user, title=title, completed=False, created_modified=now().isoformat()) 
+      if todo is None:
+        return HttpResponse('Error creating todo', status=500)
+      print(todo)
+      todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
+      return render(request, 'todos.html', {'todos': map(lambda todo: {
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, todos)} )
 
 @login_required(login_url='/login')
 def suggestions(request):
@@ -35,6 +47,7 @@ def suggestions(request):
   if suggestions is None:
     return HttpResponse('')
   else:
+    #todo fix space in title bug
     #todo implement the highlighting of the title in the suggestion below in javascript
     #${suggestion.slice(0, suggestion.indexOf(title))}<span
     #  class="bg-yellow-300"

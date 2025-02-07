@@ -4,7 +4,7 @@ def formatTodoDate(created_modified):
   difference = now() - get(created_modified)
 
   if difference.days == 0: 
-    return t('today')
+    return 'Today'
   elif difference.days == 1:
     return 'Yesterday'
   elif difference.days == 2:
