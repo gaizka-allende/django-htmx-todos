@@ -33,6 +33,7 @@
               hx-delete="/todo/{{todo.id}}"
               hx-target="#todos"
               hx-swap="outerHTML"
+              hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
             >
               Delete
           </button>

@@ -33,11 +33,25 @@ def todo(request):
       print(todo)
       todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
       return render(request, 'todos.html', {'todos': map(lambda todo: {
+        'id': todo.id,
+        'title': todo.title,
+        'completed': todo.completed,
+        'created_modified': formatTodoDate(todo.created_modified)
+      }, todos)} )
+  
+@login_required(login_url='/login')
+def deleteTodo(request, id):
+  if request.method == 'DELETE':
+    todo = Todos.objects.get(id=id)
+    todo.delete()
+    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
+    return render(request, 'todos.html', {'todos': map(lambda todo: {
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
       'created_modified': formatTodoDate(todo.created_modified)
     }, todos)} )
+
 
 @login_required(login_url='/login')
 def suggestions(request):
