@@ -1,8 +1,7 @@
 # todos/urls.py
 from django.urls import path
 
-from todos.views import index, login_view, logout_view, register, admin, todo, suggestions, deleteTodo
-
+from todos.views import index, login_view, logout_view, register, admin, createTodo, suggestions, updateTodo
 
 urlpatterns = [
     path('', index, name='index'),
@@ -10,7 +9,7 @@ urlpatterns = [
     path('logout', logout_view, name='logout'),
     path('register', register, name='register'),
     path('admin', admin, name='admin'),
-    path('todo', todo, name='todo'),
-    path('todo/<int:id>', deleteTodo, name='deleteTodo'),
+    path('todo', createTodo, name='createTodo'),
+    path('todo/<int:id>', updateTodo, name='updateTodo'),
     path('suggestions', suggestions, name='suggestions')
 ]

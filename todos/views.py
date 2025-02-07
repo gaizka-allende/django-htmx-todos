@@ -9,13 +9,14 @@ from django.contrib.auth.decorators import login_required
 from todos.models import Todos, Suggestions
 from todos.utils.date import formatTodoDate
 from arrow import now
+from django.http.request import QueryDict
 
 #todo add translations
 
 @login_required(login_url='/login')
 def index(request):
     todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-    #todo add completed todos
+    #todo add completed todos section
     return render(request, 'index.html', {'todos': map(lambda todo: {
       'id': todo.id,
       'title': todo.title,
@@ -24,13 +25,12 @@ def index(request):
     }, todos)})
 
 @login_required(login_url='/login')
-def todo(request):
+def createTodo(request):
     if request.method == 'POST':
       title = request.POST.get('title')
-      todo = Todos.objects.create(user=request.user, title=title, completed=False, created_modified=now().isoformat()) 
+      todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=now().isoformat()) 
       if todo is None:
         return HttpResponse('Error creating todo', status=500)
-      print(todo)
       todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
       return render(request, 'todos.html', {'todos': map(lambda todo: {
         'id': todo.id,
@@ -40,9 +40,9 @@ def todo(request):
       }, todos)} )
   
 @login_required(login_url='/login')
-def deleteTodo(request, id):
+def updateTodo(request, id):
+  todo = Todos.objects.get(id=id)
   if request.method == 'DELETE':
-    todo = Todos.objects.get(id=id)
     todo.delete()
     todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
     return render(request, 'todos.html', {'todos': map(lambda todo: {
@@ -51,13 +51,25 @@ def deleteTodo(request, id):
       'completed': todo.completed,
       'created_modified': formatTodoDate(todo.created_modified)
     }, todos)} )
-
+  elif request.method == 'PATCH':
+    formData = QueryDict(request.body)
+    if formData.get('checkbox_' + str(id)) is not None:
+      todo.completed = 1
+    else:
+      todo.completed = 0
+    todo.save()
+    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
+    return render(request, 'todos.html', {'todos': map(lambda todo: {
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, todos)} )
 
 @login_required(login_url='/login')
 def suggestions(request):
   title = request.GET.get('title')
   suggestions = Suggestions.objects.filter(title__icontains=title)
-  print(suggestions[0].title)
   if suggestions is None:
     return HttpResponse('')
   else:

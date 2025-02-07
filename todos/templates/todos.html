@@ -6,19 +6,24 @@
           role="checkbox"
           type="checkbox"
           class="mr-2"
-          name="checkbox"
+          id="checkbox_{{todo.id}}"
+          name="checkbox_{{todo.id}}"
           hx-patch="/todo/{{todo.id}}"
+          hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
           hx-target="#todos"
           hx-swap="outerHTML"
-          ${completed ? 'checked' : ''}
+          value="completed"
+          {% if todo.completed %}
+            checked
+          {% endif %}
         />
         <input
           role="textbox"
-          id="{{todo.id}}"
+          id="textbox_{{todo.id}}"
           class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
           value="{{todo.title}}"
           hx-put="/todo/{{todo.id}}"
-          name="${id}"
+          name="textbox_{{todo.id}}"
           ${completed ? 'disabled' : ''}
           _="on keydown 
         if event.key == 'Enter'
