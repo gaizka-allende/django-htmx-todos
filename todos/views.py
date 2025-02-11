@@ -44,13 +44,6 @@ def updateTodo(request, id):
   todo = Todos.objects.get(id=id)
   if request.method == 'DELETE':
     todo.delete()
-    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-    return render(request, 'todos.html', {'todos': map(lambda todo: {
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, todos)} )
   elif request.method == 'PATCH':
     formData = QueryDict(request.body)
     if formData.get('checkbox_' + str(id)) is not None:
@@ -58,13 +51,19 @@ def updateTodo(request, id):
     else:
       todo.completed = 0
     todo.save()
-    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-    return render(request, 'todos.html', {'todos': map(lambda todo: {
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, todos)} )
+  elif request.method == 'PUT':
+    formData = QueryDict(request.body)
+    title = formData.get('textbox_' + str(id))
+    print(title)
+    todo.title = title
+    todo.save()
+  todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
+  return render(request, 'todos.html', {'todos': map(lambda todo: {
+    'id': todo.id,
+    'title': todo.title,
+    'completed': todo.completed,
+    'created_modified': formatTodoDate(todo.created_modified)
+  }, todos)} )
 
 @login_required(login_url='/login')
 def suggestions(request):
