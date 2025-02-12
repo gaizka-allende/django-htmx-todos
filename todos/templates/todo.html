@@ -1,0 +1,47 @@
+<div class="item flex row items-center mb-2">
+  <input
+    role="checkbox"
+    type="checkbox"
+    class="mr-2"
+    id="checkbox_{{todo.id}}"
+    name="checkbox_{{todo.id}}"
+    hx-patch="/todo/{{todo.id}}"
+    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+    hx-target="#todos"
+    hx-swap="outerHTML"
+    value="completed"
+    {% if todo.completed %}
+      checked
+    {% endif %}
+  />
+  <input
+    role="textbox"
+    id="textbox_{{todo.id}}"
+    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+    value="{{todo.title}}"
+    hx-put="/todo/{{todo.id}}"
+    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+    name="textbox_{{todo.id}}"
+    ${completed ? 'disabled' : ''}
+    _="on keydown 
+  if event.key == 'Enter'
+      -- prevent the default form submission and trigger the put request
+      event.preventDefault()
+      trigger change 
+    "
+  />
+  {% if not todo.completed %}
+    <button
+        class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+        hx-delete="/todo/{{todo.id}}"
+        hx-target="#todos"
+        hx-swap="outerHTML"
+        hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+      >
+        Delete
+    </button>
+  {% endif %}
+  <span class="mx-2 text-sm">
+    {{todo.created_modified}}
+  </span>
+</div>

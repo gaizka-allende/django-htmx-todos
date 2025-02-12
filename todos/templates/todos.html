@@ -1,53 +1,40 @@
 <div id="todos" class="transition-all ease-in-out duration-[5000s]">
   <ul>
-    {% for todo in todos %}
-      <div class="item flex row items-center mb-2">
-        <input
-          role="checkbox"
-          type="checkbox"
-          class="mr-2"
-          id="checkbox_{{todo.id}}"
-          name="checkbox_{{todo.id}}"
-          hx-patch="/todo/{{todo.id}}"
-          hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-          hx-target="#todos"
-          hx-swap="outerHTML"
-          value="completed"
-          {% if todo.completed %}
-            checked
-          {% endif %}
-        />
-        <input
-          role="textbox"
-          id="textbox_{{todo.id}}"
-          class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
-          value="{{todo.title}}"
-          hx-put="/todo/{{todo.id}}"
-          hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-          name="textbox_{{todo.id}}"
-          ${completed ? 'disabled' : ''}
-          _="on keydown 
-        if event.key == 'Enter'
-            -- prevent the default form submission and trigger the put request
-            event.preventDefault()
-            trigger change 
-          "
-        />
-        {% if not completed %}
-          <button
-              class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
-              hx-delete="/todo/{{todo.id}}"
-              hx-target="#todos"
-              hx-swap="outerHTML"
-              hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-            >
-              Delete
-          </button>
-        {% endif %}
-        <span class="mx-2 text-sm">
-          {{todo.created_modified}}
-        </span>
-      </div>
+    {% for todo in uncompletedTodos %}
+      <li>
+        {% include "todo.html" %}  
+      </li>
     {% endfor%}
   </ul>
+  <details class="group" data-testid="show-completed">
+    <summary
+      class="flex items-center gap-3 font-medium marker:content-none hover:cursor-pointer"
+    >
+      <svg
+        class="w-5 h-5 text-gray-500 transition group-open:rotate-90"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="currentColor"
+        viewBox="0 0 16 16"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"
+        ></path>
+      </svg>
+      <span id="done">
+        Completed ({{uncompletedTodosCount}})
+      </span>
+    </summary>
+    <article class="px-4 pb-4">
+      <ul id="todos-done">
+        {% for todo in completedTodos %}
+          <li>
+            {% include "todo.html" %}
+          </li>
+        {% endfor %}
+      </ul>
+    </article>
+  </details>
 </div>

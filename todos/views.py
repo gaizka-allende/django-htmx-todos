@@ -15,14 +15,19 @@ from django.http.request import QueryDict
 
 @login_required(login_url='/login')
 def index(request):
-    todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-    #todo add completed todos section
-    return render(request, 'index.html', {'todos': map(lambda todo: {
+    uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+    completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
+    return render(request, 'index.html', {'uncompletedTodos': map(lambda todo: {
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
       'created_modified': formatTodoDate(todo.created_modified)
-    }, todos)})
+    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
 
 @login_required(login_url='/login')
 def createTodo(request):
@@ -31,14 +36,20 @@ def createTodo(request):
       todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=now().isoformat()) 
       if todo is None:
         return HttpResponse('Error creating todo', status=500)
-      todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-      return render(request, 'todos.html', {'todos': map(lambda todo: {
-        'id': todo.id,
-        'title': todo.title,
-        'completed': todo.completed,
-        'created_modified': formatTodoDate(todo.created_modified)
-      }, todos)} )
-  
+      uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+      completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
+      return render(request, 'todos.html',{'uncompletedTodos': map(lambda todo: {
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+                    
 @login_required(login_url='/login')
 def updateTodo(request, id):
   todo = Todos.objects.get(id=id)
@@ -50,21 +61,28 @@ def updateTodo(request, id):
       todo.completed = 1
     else:
       todo.completed = 0
+    todo.created_modified = now().isoformat()
     todo.save()
   elif request.method == 'PUT':
     formData = QueryDict(request.body)
     title = formData.get('textbox_' + str(id))
-    print(title)
     todo.title = title
+    todo.created_modified = now().isoformat()
     todo.save()
-  todos = Todos.objects.filter(user=request.user).order_by('-created_modified')
-  return render(request, 'todos.html', {'todos': map(lambda todo: {
-    'id': todo.id,
-    'title': todo.title,
-    'completed': todo.completed,
-    'created_modified': formatTodoDate(todo.created_modified)
-  }, todos)} )
-
+  uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+  completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
+  return render(request, 'todos.html', {'uncompletedTodos': map(lambda todo: {
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': formatTodoDate(todo.created_modified)
+    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+                
 @login_required(login_url='/login')
 def suggestions(request):
   title = request.GET.get('title')
