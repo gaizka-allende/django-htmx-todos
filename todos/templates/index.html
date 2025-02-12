@@ -25,6 +25,9 @@
                 end
                 exit
               end
+              if #suggestions exist
+                remove #suggestions
+              end
               fetch `/suggestions?title=${event.target.value}`
               put result after #error-add-todo 
              end"

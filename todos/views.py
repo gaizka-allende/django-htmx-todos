@@ -90,7 +90,6 @@ def suggestions(request):
   if suggestions is None:
     return HttpResponse('')
   else:
-    #todo fix space in title bug
     #todo implement the highlighting of the title in the suggestion below in javascript
     #${suggestion.slice(0, suggestion.indexOf(title))}<span
     #  class="bg-yellow-300"
