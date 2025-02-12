@@ -7,8 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from todos.models import Todos, Suggestions
-from todos.utils.date import formatTodoDate
-from arrow import now
+import datetime
 from django.http.request import QueryDict
 
 #todo add translations
@@ -21,34 +20,36 @@ def index(request):
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
+      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
     }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
+      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
     }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
 
 @login_required(login_url='/login')
 def createTodo(request):
     if request.method == 'POST':
       title = request.POST.get('title')
-      todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=now().isoformat()) 
+      todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=datetime.datetime.now())   
       if todo is None:
         return HttpResponse('Error creating todo', status=500)
       uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+      uncompletedTodos = list(map(lambda todo: {
+        'id': todo.id,
+        'title': todo.title,
+        'completed': todo.completed,
+        'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+      }, uncompletedTodos))
       completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-      return render(request, 'todos.html',{'uncompletedTodos': map(lambda todo: {
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+      completedTodos = list(map(lambda todo: {  
+        'id': todo.id,
+        'title': todo.title,
+        'completed': todo.completed,
+        'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+      }, completedTodos))
+      return render(request, 'todos.html',{'uncompletedTodos': uncompletedTodos, 'completedTodos': completedTodos, 'uncompletedTodosCount': len(uncompletedTodos)})
                     
 @login_required(login_url='/login')
 def updateTodo(request, id):
@@ -61,27 +62,30 @@ def updateTodo(request, id):
       todo.completed = 1
     else:
       todo.completed = 0
-    todo.created_modified = now().isoformat()
+    #this is not working
+    todo.created_modified = datetime.datetime.now()
     todo.save()
   elif request.method == 'PUT':
     formData = QueryDict(request.body)
     title = formData.get('textbox_' + str(id))
     todo.title = title
-    todo.created_modified = now().isoformat()
+    todo.created_modified = datetime.datetime.now()
     todo.save()
   uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+  uncompletedTodos = list(map(lambda todo: {
+      'id': todo.id,
+      'title': todo.title,
+      'completed': todo.completed,
+      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+    }, uncompletedTodos))
   completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-  return render(request, 'todos.html', {'uncompletedTodos': map(lambda todo: {
+  completedTodos = list(map(lambda todo: {  
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': formatTodoDate(todo.created_modified)
-    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+    }, completedTodos))
+  return render(request, 'todos.html', {'uncompletedTodos': uncompletedTodos, 'completedTodos': completedTodos, 'uncompletedTodosCount': len(uncompletedTodos)})
                 
 @login_required(login_url='/login')
 def suggestions(request):

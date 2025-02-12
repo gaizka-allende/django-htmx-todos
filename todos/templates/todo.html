@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="item flex row items-center mb-2">
   <input
     role="checkbox"
@@ -22,7 +23,9 @@
     hx-put="/todo/{{todo.id}}"
     hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
     name="textbox_{{todo.id}}"
-    ${completed ? 'disabled' : ''}
+    {% if todo.completed %}
+      disabled
+    {% endif %}
     _="on keydown 
   if event.key == 'Enter'
       -- prevent the default form submission and trigger the put request
@@ -42,6 +45,6 @@
     </button>
   {% endif %}
   <span class="mx-2 text-sm">
-    {{todo.created_modified}}
+    {{ todo.created_modified|naturaltime }}
   </span>
 </div>
