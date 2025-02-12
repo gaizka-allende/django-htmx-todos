@@ -18,7 +18,7 @@
   <input
     role="textbox"
     id="textbox_{{todo.id}}"
-    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2 {% if todo.completed %} opacity-50 {% endif %}" 
     value="{{todo.title}}"
     hx-put="/todo/{{todo.id}}"
     hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
