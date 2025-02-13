@@ -11,6 +11,7 @@ import datetime
 from django.http.request import QueryDict
 
 #todo add translations
+#todo add suggestions from existing todos
 
 @login_required(login_url='/login')
 def index(request):
@@ -62,7 +63,6 @@ def updateTodo(request, id):
       todo.completed = 1
     else:
       todo.completed = 0
-    #this is not working
     todo.created_modified = datetime.datetime.now()
     todo.save()
   elif request.method == 'PUT':
@@ -94,12 +94,16 @@ def suggestions(request):
   if suggestions is None:
     return HttpResponse('')
   else:
-    #todo implement the highlighting of the title in the suggestion below in javascript
-    #${suggestion.slice(0, suggestion.indexOf(title))}<span
-    #  class="bg-yellow-300"
-    #  >${title}</span
-    #>${suggestion.slice(suggestion.indexOf(title) + title.length)}
-    return render(request, 'suggestions.html', {'suggestions': suggestions})
+    suggestions = list(map(lambda suggestion: suggestion.title, Suggestions.objects.filter(title__icontains=title)))
+    def highlightSuggestionMatch(suggestion):
+      if suggestion.find(title) == -1:
+        return [{'text': title}]
+      return [
+        { 'text': suggestion[0: suggestion.find(title)]},
+        { 'text': title, 'highlight': True},
+        { 'text': suggestion[suggestion.find(title) + len(title):]}
+      ]
+    return render(request, 'suggestions.html', {'suggestions': map(highlightSuggestionMatch,  suggestions)})
 
 @csrf_exempt 
 def login_view(request):

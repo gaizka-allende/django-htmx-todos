@@ -12,9 +12,9 @@ absolute w-[75%] opacity-90 p-2.5 "
                   add .hidden to #suggestions
                 end"
             >
-              <span>
-                {{ suggestion.title}}
-              </span>
+              {% for substring in suggestion %}
+                <span {% if substring.highlight  %}class="bg-yellow-300"{% endif %}>{{ substring.text }}</span>
+              {% endfor %}
             </li>
         {% endfor %}
       </ul>
