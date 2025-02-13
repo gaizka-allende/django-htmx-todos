@@ -1,36 +1,96 @@
 <!doctype html>
-    <html
-      _="on load 
-        if localStorage.theme is not empty
-          if localStorage.theme equals 'dark'
+  <html
+    _="on load 
+      if localStorage.theme is not empty
+        if localStorage.theme equals 'dark'
+          set @class to 'dark'
+        else if localStorage.theme equals 'light'
+          set @class to 'light'
+        else if localStorage.theme equals 'system'
+          if window.matchMedia('(prefers-color-scheme: dark)').matches
             set @class to 'dark'
-          else if localStorage.theme equals 'light'
-            set @class to 'light'
-          else if localStorage.theme equals 'system'
+          end
+        end
+      else if window.matchMedia('(prefers-color-scheme: dark)').matches
+        set @class to 'dark'
+      end
+    end
+  "
+  >
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
+      <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/response-targets.js"></script>
+      <script src="https://unpkg.com/hyperscript.org@0.9.12/dist/_hyperscript.min.js"></script>
+      <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+      <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+        @custom-variant dark (&:where(.dark, .dark *));
+      </style>
+      {% block title %}{% endblock %}
+    </head>
+  <body class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
+    <header class="flex justify-end m-2">
+      <div>
+        <select
+          name="language"
+          id="language"
+          hx-get="/language"
+          hx-trigger="change"
+          hx-select="#screen"
+          hx-target="#screen"
+          hx-swap="outerHTML"
+          _="
+          on change 
+            if event.target.value equals '' 
+              halt the event
+            else
+              set cookies.language_id to event.target.value
+            end
+            
+          end
+        "
+        >
+          <option value="" selected hidden>
+            Select a language
+          </option>
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+        </select>
+      </div>
+      <div>
+        <select
+          name="theme"
+          id="theme"
+          _="            
+          on change 
+          if event.target.value equals 'dark' 
+            set @class of document.documentElement to 'dark' 
+          else if event.target.value equals 'light'  
+            set @class of document.documentElement to 'light'
+          else if event.target.value equals 'system'  
             if window.matchMedia('(prefers-color-scheme: dark)').matches
-              set @class to 'dark'
+              set @class of document.documentElement to 'dark' 
+            else 
+              set @class of document.documentElement to 'light' 
             end
           end
-        else if window.matchMedia('(prefers-color-scheme: dark)').matches
-          set @class to 'dark'
+          set localStorage.theme to event.target.value
         end
-      end
-    "
-    >
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js"></script>
-        <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/response-targets.js"></script>
-        <script src="https://unpkg.com/hyperscript.org@0.9.12/dist/_hyperscript.min.js"></script>
-        <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-        {% block title %}
-        {% endblock %}
-      </head>
-      <body class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
-<body>
-  <main>
-    {% block main %}
-    {% endblock %}
-  </main>
-</body>
+        "
+        >
+          <option value="" selected hidden>Select a theme</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">System</option>
+        </select>
+      </div>
+    </header>
+    <main>
+      {% block main %}
+      {% endblock %}
+    </main>
+  </body>
 </html>
