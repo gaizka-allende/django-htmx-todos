@@ -28,6 +28,12 @@
         @tailwind components;
         @tailwind utilities;
         @custom-variant dark (&:where(.dark, .dark *));
+        @layer base {
+          select,
+          option {
+            @apply bg-white dark:bg-slate-800 text-slate-800 dark:text-white;
+          }
+        }
       </style>
       {% block title %}{% endblock %}
     </head>
