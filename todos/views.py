@@ -10,7 +10,7 @@ from todos.models import Todos, Suggestions
 import datetime
 from django.http.request import QueryDict
 
-#todo add translations
+#todo add translations using django's built in translation
 #todo add suggestions from existing todos
 
 @login_required(login_url='/login')
@@ -94,7 +94,13 @@ def suggestions(request):
   if suggestions is None:
     return HttpResponse('')
   else:
-    suggestions = list(map(lambda suggestion: suggestion.title, Suggestions.objects.filter(title__icontains=title)))
+    #todo fix when typing a space in the search bar
+    suggestions = list(map(lambda suggestion: suggestion.title, 
+                           Suggestions.objects.filter(title__icontains=title)))
+    suggestionsFromTodos = list(map(lambda suggestion: suggestion.title,
+                                    Todos.objects.filter(title__icontains=title))) 
+    suggestions = suggestions + suggestionsFromTodos
+    suggestions = list(dict.fromkeys(suggestions))
     def highlightSuggestionMatch(suggestion):
       if suggestion.find(title) == -1:
         return [{'text': title}]
