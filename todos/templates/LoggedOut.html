@@ -1,7 +1,5 @@
-{% extends "screen.html" %}
-{% block title %}
-<title>Logged out</title>
+{% extends "screen.html" %} {% load i18n %} {% block title %}
+<title>{% translate 'Logged out' %}</title>
+{% endblock %} {% block content %}
+<h1>{% translate 'Logged out' %}</h1>
 {% endblock %}
-{% block content %}
-<h1>Logged out</h1>
-{% endblock %} 

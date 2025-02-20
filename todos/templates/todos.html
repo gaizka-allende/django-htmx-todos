@@ -1,9 +1,8 @@
+{% load i18n %}
 <div id="todos" class="transition-all ease-in-out duration-[5000s]">
   <ul>
     {% for todo in uncompletedTodos %}
-      <li>
-        {% include "todo.html" %}  
-      </li>
+    <li>{% include "todo.html" %}</li>
     {% endfor%}
   </ul>
   <details class="group" data-testid="show-completed">
@@ -24,15 +23,13 @@
         ></path>
       </svg>
       <span id="done">
-        Completed ({{uncompletedTodosCount}})
+        {% translate 'Completed' %} ({{uncompletedTodosCount}})
       </span>
     </summary>
     <article class="px-4 pb-4">
       <ul id="todos-done">
         {% for todo in completedTodos %}
-          <li>
-            {% include "todo.html" %}
-          </li>
+        <li>{% include "todo.html" %}</li>
         {% endfor %}
       </ul>
     </article>

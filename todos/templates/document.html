@@ -62,7 +62,7 @@
           end
         "
         >
-          <option value="" selected hidden>Select a language</option>
+          <option value="" selected hidden>{% translate 'Select a language' %}</option>
           {% for lang in LANGUAGES %}
           <option value="{{ lang.0 }}" {% if lang.0 == request.COOKIES.django_language %} selected{% endif %}>{{ lang.1 }}</option>
           {% endfor %}
@@ -89,10 +89,10 @@
         end
         "
         >
-          <option value="" selected hidden>Select a theme</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="system">System</option>
+          <option value="" selected hidden>{% translate 'Select a theme' %}</option>
+          <option value="light">{% translate 'Light' %}</option>
+          <option value="dark">{% translate 'Dark' %}</option>
+          <option value="system">{% translate 'System' %}</option>
         </select>
       </div>
     </header>

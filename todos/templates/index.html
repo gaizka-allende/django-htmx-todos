@@ -1,24 +1,19 @@
-{% extends "screen.html" %}
-{% load i18n %}
-{% block title %}
-<title>Todos</title>
-{% endblock %}
-{% block content %}
-    <h1 class="text-4xl font-bold mb-4">
-      {% translate 'Todos' %}
-    </h1>
-    <form
-      hx-post="/todo"
-      hx-target="#todos"
-      hx-swap="outerHTML"
-      class="mb-4"
-      hx-target-403="#error-add-todo"
-      hx-on::before-request="document.querySelector('#title').value=''"
-   >
-      {% csrf_token %}
-      <div class="mb-2 flex">
-        <input
-          _="on keyup 
+{% extends "screen.html" %} {% load i18n %} {% block title %}
+<title>{% translate 'Todos' %}</title>
+{% endblock %} {% block content %}
+<h1 class="text-4xl font-bold mb-4">{% translate 'Todos' %}</h1>
+<form
+  hx-post="/todo"
+  hx-target="#todos"
+  hx-swap="outerHTML"
+  class="mb-4"
+  hx-target-403="#error-add-todo"
+  hx-on::before-request="document.querySelector('#title').value=''"
+>
+  {% csrf_token %}
+  <div class="mb-2 flex">
+    <input
+      _="on keyup 
               debounced at 1000ms
               if event.target.value.length < 3
                 if #suggestions exist
@@ -32,21 +27,21 @@
               fetch `/suggestions?title=${event.target.value}`
               put result after #error-add-todo 
              end"
-          value=""
-          id="title"
-          name="title"
-          type="text"
-          class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 mr-2"
-          data-testid="add-todo"
-        />
-        <button
-          class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2 text-center"
-          type="submit"
-        >
-          {% translate 'Add' %}
-        </button>
-      </div>
-      <div id="error-add-todo" class="text-red-500 text-sm"></div>
-      {% include "todos.html" %} 
-    </form>
-{% endblock %} 
+      value=""
+      id="title"
+      name="title"
+      type="text"
+      class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 mr-2"
+      data-testid="add-todo"
+    />
+    <button
+      class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2 text-center"
+      type="submit"
+    >
+      {% translate 'Add' %}
+    </button>
+  </div>
+  <div id="error-add-todo" class="text-red-500 text-sm"></div>
+  {% include "todos.html" %}
+</form>
+{% endblock %}

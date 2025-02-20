@@ -1,4 +1,4 @@
-{% load humanize %}
+{% load humanize %} {% load i18n %}
 <div class="item flex row items-center mb-2">
   <input
     role="checkbox"
@@ -11,21 +11,31 @@
     hx-target="#todos"
     hx-swap="outerHTML"
     value="completed"
-    {% if todo.completed %}
-      checked
-    {% endif %}
+    {%
+    if
+    todo.completed
+    %}
+    checked
+    {%
+    endif
+    %}
   />
   <input
     role="textbox"
     id="textbox_{{todo.id}}"
-    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2 {% if todo.completed %} opacity-50 {% endif %}" 
+    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2 {% if todo.completed %} opacity-50 {% endif %}"
     value="{{todo.title}}"
     hx-put="/todo/{{todo.id}}"
     hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
     name="textbox_{{todo.id}}"
-    {% if todo.completed %}
-      disabled
-    {% endif %}
+    {%
+    if
+    todo.completed
+    %}
+    disabled
+    {%
+    endif
+    %}
     _="on keydown 
   if event.key == 'Enter'
       -- prevent the default form submission and trigger the put request
@@ -34,17 +44,15 @@
     "
   />
   {% if not todo.completed %}
-    <button
-        class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
-        hx-delete="/todo/{{todo.id}}"
-        hx-target="#todos"
-        hx-swap="outerHTML"
-        hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-      >
-        Delete
-    </button>
+  <button
+    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
+    hx-delete="/todo/{{todo.id}}"
+    hx-target="#todos"
+    hx-swap="outerHTML"
+    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+  >
+    {% translate 'Delete' %}
+  </button>
   {% endif %}
-  <span class="mx-2 text-sm">
-    {{ todo.created_modified|naturaltime }}
-  </span>
+  <span class="mx-2 text-sm"> {{ todo.created_modified|naturaltime }} </span>
 </div>
