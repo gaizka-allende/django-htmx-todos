@@ -1,10 +1,11 @@
 {% extends "screen.html" %}
+{% load i18n %}
 {% block title %}
 <title>Todos</title>
 {% endblock %}
 {% block content %}
     <h1 class="text-4xl font-bold mb-4">
-      Todos
+      {% translate 'Todos' %}
     </h1>
     <form
       hx-post="/todo"
@@ -42,7 +43,7 @@
           class="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-5 py-2 text-center"
           type="submit"
         >
-          Add
+          {% translate 'Add' %}
         </button>
       </div>
       <div id="error-add-todo" class="text-red-500 text-sm"></div>

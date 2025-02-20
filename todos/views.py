@@ -9,9 +9,7 @@ from django.contrib.auth.decorators import login_required
 from todos.models import Todos, Suggestions
 import datetime
 from django.http.request import QueryDict
-
-#todo add translations using django's built in translation
-#todo add suggestions from existing todos
+from django.utils.translation import gettext_lazy as _
 
 @login_required(login_url='/login')
 def index(request):

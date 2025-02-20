@@ -11,5 +11,5 @@ urlpatterns = [
     path('admin', admin, name='admin'),
     path('todo', createTodo, name='createTodo'),
     path('todo/<int:id>', updateTodo, name='updateTodo'),
-    path('suggestions', suggestions, name='suggestions')
+    path('suggestions', suggestions, name='suggestions'),
 ]
