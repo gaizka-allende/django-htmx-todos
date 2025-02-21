@@ -34,6 +34,9 @@
         option {
           @apply bg-white dark:bg-slate-800 text-slate-800 dark:text-white;
         }
+        input:disabled {
+          @apply opacity-50 cursor-not-allowed bg-gray-200 dark:bg-gray-700;
+        }
       }
     </style>
     {% block title %}{% endblock %}
