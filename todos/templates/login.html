@@ -9,10 +9,12 @@
   hx-target-error="#error"
   hx-disabled-elt="input[type='text'], button"
   hx-on::before-request="
-            document.getElementById('loading')?.classList.remove('hidden')
+            document.getElementById('submit').disabled = true;
+            document.title = '{% translate 'Todos' %}';
           "
   hx-on::after-request="
-            document.getElementById('loading')?.classList.add('hidden')
+            document.getElementById('submit').disabled = false;
+            document.title = '{% translate 'Todos' %}';
         "
 >
   <div class="mb-2 flex items-center justify-between">
@@ -46,10 +48,4 @@
   </div>
   <div id="error" class="text-red-500 text-sm"></div>
 </form>
-<div
-  id="loading"
-  class="hidden transition ease-in-out delay-150 h-full w-full bg-white absolute top-0 flex justify-center items-center"
->
-  {% translate 'Loading' %} ...
-</div>
 {% endblock %}
