@@ -1,4 +1,5 @@
-{% extends "screen.html" %} {% load i18n %} {% block title %}
+{% extends screen|yesno:"screen.html,fragment.html,fragment.html" %} 
+{% load i18n %} {% block title %}
 <title>{% translate 'Todos' %}</title>
 {% endblock %} {% block content %}
 <h1 class="text-4xl font-bold mb-4">{% translate 'Todos' %}</h1>

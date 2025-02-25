@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 def index(request):
     uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
     completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-    return render(request, 'index.html', {'uncompletedTodos': map(lambda todo: {
+    return render(request, 'index.html', {'screen': True, 'uncompletedTodos': map(lambda todo: {
       'id': todo.id,
       'title': todo.title,
       'completed': todo.completed,
@@ -118,7 +118,20 @@ def login_view(request):
         if user is None:
           return HttpResponse('Invalid username or password', status=404)
         login(request, user)
-        response = render(request, 'index.html')
+        #response = render(request, 'index.html')
+        uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+        completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
+        response = render(request, 'index.html', {'uncompletedTodos': map(lambda todo: {
+          'id': todo.id,
+          'title': todo.title,
+          'completed': todo.completed,
+          'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
+          'id': todo.id,
+          'title': todo.title,
+          'completed': todo.completed,
+          'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
         response['HX-Replace-Url'] = '/'
         return response
     elif request.method == 'GET':
