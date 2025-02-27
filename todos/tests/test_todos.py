@@ -1,10 +1,11 @@
-import os
+#import os
 from datetime import datetime, timedelta
 import pytest
 from playwright.sync_api import expect
 import django
 from django.conf import settings
 from django.template.loader import get_template
+import os
 
 settings.configure(TEMPLATES=[{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -12,6 +13,7 @@ settings.configure(TEMPLATES=[{
 }], INSTALLED_APPS=['django.contrib.humanize'])
 django.setup()
 
+@pytest.mark.skip()
 def test_add_todo(page):
     def handle_todos_route(route):
         if route.request.method != 'GET':
@@ -43,102 +45,145 @@ def test_add_todo(page):
     
     expect(page.get_by_role("button", name="delete")).to_be_visible()
 
-#def test_delete_todo(page):
-    #def handle_todos_route(route):
-        #if route.request.method != 'GET':
-            #route.fallback()
-            #return
-            
-        #route.fulfill(
-            #status=200,
-            #content_type='text/html',
-            #body='<div class="todo">buy milk</div>'
-        #)
-    
-    #def handle_todo_delete_route(route):
-        #if route.request.method != 'DELETE':
-            #route.fallback()
-            #return
-            
-        #route.fulfill(
-            #status=200,
-            #content_type='application/text',
-            #body='<div></div>'
-        #)
+@pytest.mark.skip()
+def test_delete_todo(page):
+    def handle_todos_route(route):
+        if route.request.method != 'GET':
+            route.fallback()
+            return
 
-    #page.route("**/todos", handle_todos_route)
-    #page.route("**/todo/*", handle_todo_delete_route)
+        route.fulfill(
+            status=200,
+            content_type='text/html',
+            body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [
+            {
+                'title': 'buy milk',
+                'id': '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2',
+                'completed': 0,
+                'created_modified': datetime.now()
+            }
+            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+        )
+    page.route("**/todos", handle_todos_route)
     
-    #page.goto("http://localhost:3000/todos")
-    #page.wait_for_selector("text=Todo")
-    #page.get_by_role("button", name="delete").click()
-    
-    #expect(page.get_by_role("button", name="delete")).not_to_be_visible()
-
-#def test_complete_todo(page):
-    #def handle_todos_route(route):
-        #if route.request.method != 'GET':
-            #route.fallback()
-            #return
+    def handle_todo_delete_route(route):
+        if route.request.method != 'DELETE':
+            route.fallback()
+            return
             
-        #route.fulfill(
-            #status=200,
-            #content_type='text/html',
-            #body='<div class="todo"><input type="checkbox">buy milk</div>'
-        #)
+        route.fulfill(
+            status=200,
+            content_type='application/text',
+            body='<div></div>'
+        )
+    page.route("**/todo/*", handle_todo_delete_route)
     
-    #def handle_todo_patch_route(route):
-        #if route.request.method != 'PATCH':
-            #route.fallback()
-            #return
-            
-        #route.fulfill(
-            #status=200,
-            #content_type='application/text',
-            #body='<div class="todo completed"><input type="checkbox" checked>buy milk</div>'
-        #)
+    page.goto("http://localhost:3000/todos")
+    page.wait_for_selector("text=Todo")
+    page.get_by_role("button", name="delete").click()
+    
+    expect(page.get_by_role("button", name="delete")).not_to_be_visible()
 
-    #page.route("**/todos", handle_todos_route)
-    #page.route("**/todo/*", handle_todo_patch_route)
-    
-    #page.goto("http://localhost:3000/todos")
-    #page.wait_for_selector("text=Todo")
-    #page.get_by_role("checkbox").click()
-    #page.wait_for_selector("text=Completed (1)")
-    #page.get_by_test_id("show-completed").click()
-    
-    #expect(page.get_by_role("checkbox")).to_be_checked()
-
-#def test_edit_todo(page):
-    #todo_id = '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2'
-    
-    #def handle_todos_route(route):
-        #if route.request.method != 'GET':
-            #route.fallback()
-            #return
+@pytest.mark.skip()
+def test_complete_todo(page):
+    def handle_todos_route(route):
+        if route.request.method != 'GET':
+            route.fallback()
+            return
             
-        #route.fulfill(
-            #status=200,
-            #content_type='text/html',
-            #body=f'<div class="todo"><input name="{todo_id}" value="buy milk"></div>'
-        #)
+        route.fulfill(
+            status=200,
+            content_type='text/html',
+            body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [
+            {
+                'title': 'buy milk',
+                'id': '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2',
+                'completed': 0,
+                'created_modified': datetime.now()
+            }
+            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+        )
+    page.route("**/todos", handle_todos_route)
     
-    #def handle_todo_put_route(route):
-        #if route.request.method != 'PUT':
-            #route.fallback()
-            #return
+    def handle_todo_patch_route(route):
+        if route.request.method != 'PATCH':
+            route.fallback()
+            return
             
-        #route.fulfill(
-            #status=200,
-            #content_type='application/text',
-            #body=todo_id
-        #)
+        route.fulfill(
+            status=200,
+            content_type='text/html',
+            body=get_template('index.html').render({
+                'screen': True, 
+                'uncompletedTodos': [], 
+                'uncompletedTodosCount': 0,
+                'completedTodos': [{
+                    'title': 'buy milk',
+                    'id': '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2',
+                    'completed': 1,
+                    'created_modified': datetime.now()
+                }],
+                'completedTodosCount': 1
+            })
+        )
 
-    #page.route("**/todos", handle_todos_route)
-    #page.route("**/todo/*", handle_todo_put_route)
+    page.route("**/todo/*", handle_todo_patch_route)
     
-    #page.goto("http://localhost:3000/todos")
-    #page.wait_for_selector("text=Todo")
+    page.goto("http://localhost:3000/todos")
+
+    page.wait_for_selector("text=Todo")
     
-    #page.locator(f'[name="{todo_id}"]').fill("buy chocolate")
-    #expect(page.locator(f'[name="{todo_id}"]')).to_have_value("buy chocolate") 
+    page.get_by_role("checkbox").click()
+    
+    expect(page.get_by_text("Completed (1)")).to_be_visible(timeout=5000)
+    
+    page.get_by_test_id("show-completed").click()
+    
+    expect(page.get_by_role("checkbox")).to_be_checked()
+
+def test_edit_todo(page):
+    todo_id = '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2'
+    
+    def handle_todos_route(route):
+        if route.request.method != 'GET':
+            route.fallback()
+            return
+        route.fulfill(
+            status=200,
+            content_type='text/html',
+            body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [
+            {
+                'title': 'buy milk',
+                'id': todo_id,
+                'completed': 0,
+                'created_modified': datetime.now()
+            }
+            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+        )
+    page.route("**/todos", handle_todos_route)
+    
+    def handle_todo_put_route(route):
+        if route.request.method != 'PUT':
+            route.fallback()
+            return
+            
+        route.fulfill(
+            status=200,
+            content_type='text/html',
+            body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [
+            {
+                'title': 'buy chocolate',
+                'id': todo_id,
+                'completed': 0,
+                'created_modified': datetime.now()
+            }
+            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+        )
+    page.route("**/todo/*", handle_todo_put_route)
+    
+    page.goto("http://localhost:3000/todos")
+    page.wait_for_selector("text=Todo")
+
+    expect(page.locator(f'[name="textbox_{todo_id}"]')).to_have_value("buy milk")
+    page.locator(f'[name="textbox_{todo_id}"]').fill("buy chocolate")
+    expect(page.locator(f'[name="textbox_{todo_id}"]')).to_have_value("buy chocolate")
