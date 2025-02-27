@@ -1,11 +1,8 @@
-#import os
 from datetime import datetime, timedelta
-import pytest
 from playwright.sync_api import expect
 import django
 from django.conf import settings
 from django.template.loader import get_template
-import os
 
 settings.configure(TEMPLATES=[{
     'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -13,18 +10,23 @@ settings.configure(TEMPLATES=[{
 }], INSTALLED_APPS=['django.contrib.humanize'])
 django.setup()
 
-@pytest.mark.skip()
 def test_add_todo(page):
     def handle_todos_route(route):
-        if route.request.method != 'GET':
+        if route.request.method == 'GET':
+            route.fulfill(
+                status=200,
+                content_type='text/html',
+                body=get_template('login.html').render({}) 
+            )
+        elif route.request.method == 'POST':
+            route.fulfill(
+                status=200,
+                content_type='text/html',
+                body=get_template('index.html').render({'screen': True}) 
+            )
+        else:
             route.fallback()
             return
-        
-        route.fulfill(
-            status=200,
-            content_type='text/html',
-            body=get_template('index.html').render({'screen': True}) 
-        )
     page.route("**/todos", handle_todos_route)
     
     def handle_todo_route(route):
@@ -45,7 +47,6 @@ def test_add_todo(page):
     
     expect(page.get_by_role("button", name="delete")).to_be_visible()
 
-@pytest.mark.skip()
 def test_delete_todo(page):
     def handle_todos_route(route):
         if route.request.method != 'GET':
@@ -84,7 +85,6 @@ def test_delete_todo(page):
     
     expect(page.get_by_role("button", name="delete")).not_to_be_visible()
 
-@pytest.mark.skip()
 def test_complete_todo(page):
     def handle_todos_route(route):
         if route.request.method != 'GET':
