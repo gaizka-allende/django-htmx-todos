@@ -16,13 +16,13 @@ def test_add_todo(page):
             route.fulfill(
                 status=200,
                 content_type='text/html',
-                body=get_template('login.html').render({}) 
+                body=get_template('index.html').render({'screen': True  }) 
             )
         elif route.request.method == 'POST':
             route.fulfill(
                 status=200,
                 content_type='text/html',
-                body=get_template('index.html').render({'screen': True}) 
+                body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [], 'uncompletedTodosCount': 0, 'completedTodos': [], 'completedTodosCount': 0}) 
             )
         else:
             route.fallback()

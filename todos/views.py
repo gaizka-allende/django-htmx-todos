@@ -111,32 +111,37 @@ def suggestions(request):
 
 @csrf_exempt 
 def login_view(request):
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            # Redirect to index if already logged in
+            response = HttpResponse('', status=302)
+            response['Location'] = '/'
+            return response
+        return render(request, 'login.html')
+        
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         user = authenticate(username=username, password=password)
         if user is None:
-          return HttpResponse('Invalid username or password', status=404)
+            return HttpResponse('Invalid username or password', status=404)
         login(request, user)
-        #response = render(request, 'index.html')
         uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
         completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
         response = render(request, 'index.html', {'uncompletedTodos': map(lambda todo: {
-          'id': todo.id,
-          'title': todo.title,
-          'completed': todo.completed,
-          'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
         }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
-          'id': todo.id,
-          'title': todo.title,
-          'completed': todo.completed,
-          'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
         }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
         response['HX-Replace-Url'] = '/'
         return response
-    elif request.method == 'GET':
-      return render(request, 'login.html')
-  
+
 @login_required(login_url='/login')
 def logout_view(request):
     logout(request)
