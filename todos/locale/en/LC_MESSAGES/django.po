@@ -125,3 +125,18 @@ msgstr ""
 
 msgid "Task must be at least 5 characters long"
 msgstr ""
+
+msgid "Account"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Username already exists"
+msgstr ""
+
+msgid "Account updated successfully"
+msgstr ""
+
+msgid "Error updating account"
+msgstr ""

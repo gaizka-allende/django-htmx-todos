@@ -10,6 +10,8 @@ from todos.models import Todos, Suggestions
 import datetime
 from django.http.request import QueryDict
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth import update_session_auth_hash
 
 @login_required(login_url='/login')
 def index(request):
@@ -171,3 +173,43 @@ def register(request):
 @login_required(login_url='/login')
 def admin(request):
     return HttpResponse('<h1>Admin</h1>')
+
+@login_required(login_url='/login')
+def account(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Get current user
+        user = User.objects.get(username=request.user.username)
+        
+        # Update username if changed
+        if username != user.username:
+            # Check if new username already exists
+            if User.objects.filter(username=username).exists():
+                return HttpResponse(_('Username already exists'), status=400)
+            user.username = username
+            
+        # Update password if provided (not dots)
+        if not all(c == '•' for c in password):
+            user.password = make_password(password)
+            
+        try:
+            user.save()
+            # Update the session hash to prevent logout
+            if not all(c == '•' for c in password):
+                update_session_auth_hash(request, user)
+            return render(request, 'account.html', {
+                'screen': True,
+                'username': user.username,
+                'success_message': _('Account updated successfully')
+            })
+        except Exception as e:
+            return HttpResponse(_('Error updating account'), status=500)
+    
+    # GET request - show the form
+    user = User.objects.get(username=request.user.username)
+    return render(request, 'account.html', {
+        'screen': True,
+        'username': user.username
+    })

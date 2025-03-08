@@ -125,3 +125,18 @@ msgstr "Registrarse"
 
 msgid "Task must be at least 5 characters long"
 msgstr "La tarea debe tener al menos 5 caracteres"
+
+msgid "Account"
+msgstr "Cuenta"
+
+msgid "Save"
+msgstr "Guardar"
+
+msgid "Username already exists"
+msgstr "El nombre de usuario ya existe"
+
+msgid "Account updated successfully"
+msgstr "Cuenta actualizada exitosamente"
+
+msgid "Error updating account"
+msgstr "Error al actualizar la cuenta"
