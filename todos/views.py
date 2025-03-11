@@ -17,40 +17,47 @@ from django.contrib.auth import update_session_auth_hash
 def index(request):
     uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
     completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-    return render(request, 'index.html', {'screen': True, 'uncompletedTodos': map(lambda todo: {
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-    }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
-      'id': todo.id,
-      'title': todo.title,
-      'completed': todo.completed,
-      'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-    }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+    return render(request, 'index.html', {
+        'screen': True, 
+        'uncompletedTodos': list(map(lambda todo: {
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, uncompletedTodos)), 
+        'completedTodos': list(map(lambda todo: {  
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, completedTodos))
+    })
 
 @login_required(login_url='/login')
 def createTodo(request):
     if request.method == 'POST':
-      title = request.POST.get('title')
-      todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=datetime.datetime.now())   
-      if todo is None:
-        return HttpResponse('Error creating todo', status=500)
-      uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
-      uncompletedTodos = list(map(lambda todo: {
-        'id': todo.id,
-        'title': todo.title,
-        'completed': todo.completed,
-        'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-      }, uncompletedTodos))
-      completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-      completedTodos = list(map(lambda todo: {  
-        'id': todo.id,
-        'title': todo.title,
-        'completed': todo.completed,
-        'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-      }, completedTodos))
-      return render(request, 'todos.html',{'uncompletedTodos': uncompletedTodos, 'completedTodos': completedTodos, 'uncompletedTodosCount': len(uncompletedTodos)})
+        title = request.POST.get('title')
+        todo = Todos.objects.create(user=request.user, title=title, completed=0, created_modified=datetime.datetime.now())   
+        if todo is None:
+            return HttpResponse('Error creating todo', status=500)
+        uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
+        uncompletedTodos = list(map(lambda todo: {
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, uncompletedTodos))
+        completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
+        completedTodos = list(map(lambda todo: {  
+            'id': todo.id,
+            'title': todo.title,
+            'completed': todo.completed,
+            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+        }, completedTodos))
+        return render(request, 'todos.html', {
+            'uncompletedTodos': uncompletedTodos, 
+            'completedTodos': completedTodos
+        })
                     
 @login_required(login_url='/login')
 def updateTodo(request, id):
@@ -85,7 +92,10 @@ def updateTodo(request, id):
       'completed': todo.completed,
       'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
     }, completedTodos))
-  return render(request, 'todos.html', {'uncompletedTodos': uncompletedTodos, 'completedTodos': completedTodos, 'uncompletedTodosCount': len(uncompletedTodos)})
+  return render(request, 'todos.html', {
+      'uncompletedTodos': uncompletedTodos, 
+      'completedTodos': completedTodos
+  })
                 
 @login_required(login_url='/login')
 def suggestions(request):
@@ -130,17 +140,20 @@ def login_view(request):
         login(request, user)
         uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
         completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
-        response = render(request, 'index.html', {'uncompletedTodos': map(lambda todo: {
-            'id': todo.id,
-            'title': todo.title,
-            'completed': todo.completed,
-            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-        }, uncompletedTodos), 'completedTodos': map(lambda todo: {  
-            'id': todo.id,
-            'title': todo.title,
-            'completed': todo.completed,
-            'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
-        }, completedTodos), 'uncompletedTodosCount': len(uncompletedTodos)})
+        response = render(request, 'index.html', {
+            'uncompletedTodos': list(map(lambda todo: {
+                'id': todo.id,
+                'title': todo.title,
+                'completed': todo.completed,
+                'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+            }, uncompletedTodos)), 
+            'completedTodos': list(map(lambda todo: {  
+                'id': todo.id,
+                'title': todo.title,
+                'completed': todo.completed,
+                'created_modified': datetime.datetime.fromisoformat(todo.created_modified)
+            }, completedTodos))
+        })
         response['HX-Replace-Url'] = '/'
         return response
 

@@ -5,6 +5,7 @@
     <li>{% include "todo.html" %}</li>
     {% endfor%}
   </ul>
+  {% if completedTodos|length > 0 %}
   <details class="group" data-testid="show-completed">
     <summary
       class="flex items-center gap-3 font-medium marker:content-none hover:cursor-pointer"
@@ -23,7 +24,7 @@
         ></path>
       </svg>
       <span id="done">
-        {% translate 'Completed' %} ({{completedTodosCount}})
+        {% translate 'Completed' %} ({{ completedTodos|length }})
       </span>
     </summary>
     <article class="px-4 pb-4">
@@ -34,4 +35,5 @@
       </ul>
     </article>
   </details>
+  {% endif %}
 </div>
