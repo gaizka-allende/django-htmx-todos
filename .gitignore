@@ -28,3 +28,21 @@ dist-ssr
 
 # Ignore compiled translation files
 *.mo
+
+# SQLite database files
+*.sqlite3
+db.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
