@@ -1,14 +1,6 @@
 from datetime import datetime, timedelta
 from playwright.sync_api import expect
-import django
-from django.conf import settings
 from django.template.loader import get_template
-
-settings.configure(TEMPLATES=[{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': ['todos/templates'],
-}], INSTALLED_APPS=['django.contrib.humanize'])
-django.setup()
 
 def test_add_todo(page):
     def handle_todos_route(route):
@@ -22,7 +14,7 @@ def test_add_todo(page):
             route.fulfill(
                 status=200,
                 content_type='text/html',
-                body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [], 'uncompletedTodosCount': 0, 'completedTodos': [], 'completedTodosCount': 0}) 
+                body=get_template('index.html').render({'screen': True, 'uncompletedTodos': [], 'completedTodos': []}) 
             )
         else:
             route.fallback()
@@ -63,7 +55,7 @@ def test_delete_todo(page):
                 'completed': 0,
                 'created_modified': datetime.now()
             }
-            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+            ], 'completedTodos': []}) 
         )
     page.route("**/todos", handle_todos_route)
     
@@ -101,7 +93,7 @@ def test_complete_todo(page):
                 'completed': 0,
                 'created_modified': datetime.now()
             }
-            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+            ], 'completedTodos': []}) 
         )
     page.route("**/todos", handle_todos_route)
     
@@ -116,14 +108,12 @@ def test_complete_todo(page):
             body=get_template('index.html').render({
                 'screen': True, 
                 'uncompletedTodos': [], 
-                'uncompletedTodosCount': 0,
                 'completedTodos': [{
                     'title': 'buy milk',
                     'id': '5d686f21-8775-42c6-ae9a-2cd88bdfb6d2',
                     'completed': 1,
                     'created_modified': datetime.now()
-                }],
-                'completedTodosCount': 1
+                }]
             })
         )
 
@@ -158,7 +148,7 @@ def test_edit_todo(page):
                 'completed': 0,
                 'created_modified': datetime.now()
             }
-            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+            ], 'completedTodos': []}) 
         )
     page.route("**/todos", handle_todos_route)
     
@@ -177,7 +167,7 @@ def test_edit_todo(page):
                 'completed': 0,
                 'created_modified': datetime.now()
             }
-            ], 'uncompletedTodosCount': 1, 'completedTodos': [], 'completedTodosCount': 0}) 
+            ], 'completedTodos': []}) 
         )
     page.route("**/todo/*", handle_todo_put_route)
     

@@ -1,15 +1,5 @@
-from datetime import datetime
 from playwright.sync_api import expect
-import django
-from django.conf import settings
 from django.template.loader import get_template
-from django.contrib.auth.hashers import make_password
-
-settings.configure(TEMPLATES=[{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': ['todos/templates'],
-}], INSTALLED_APPS=['django.contrib.humanize'])
-django.setup()
 
 def test_account_form_display(page):
     def handle_account_route(route):
@@ -90,7 +80,7 @@ def test_account_username_exists_error(page):
         elif route.request.method == 'POST':
             route.fulfill(
                 status=400,
-                content_type='text/plain',
+                content_type='text/html',
                 body='Username already exists'
             )
     page.route("**/account", handle_account_route)
@@ -101,7 +91,7 @@ def test_account_username_exists_error(page):
     page.get_by_label("Username").fill("existinguser")
     page.get_by_role("button", name="Save").click()
     
-    # Verify error message
+    # Verify error message appears
     expect(page.get_by_text("Username already exists")).to_be_visible()
 
 def test_password_field_behavior(page):

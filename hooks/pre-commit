@@ -1,0 +1,22 @@
+#!/bin/bash
+
+echo "Running tests before commit..."
+path=$(cat $GIT_DIR/gitdir)
+path="${path%/.git}"
+echo $path
+
+# Run Django tests
+python -m pytest $path/todos/tests/
+
+# Store the exit code
+TEST_EXIT_CODE=$?
+
+# If the tests failed, prevent the commit
+if [ $TEST_EXIT_CODE -ne 0 ]; then
+  echo "Tests failed! Commit aborted."
+  exit 1
+fi
+
+# If we get here, tests passed
+echo "Tests passed! Proceeding with commit..."
+exit 0

@@ -6,19 +6,23 @@ absolute w-[75%] opacity-90 p-2.5"
     >
       <ul>
         {% for suggestion in suggestions %}
+            {% with text=suggestion.0.text|add:suggestion.1.text|add:suggestion.2.text %}
             <li
               class="text-base py-0.5 cursor-pointer [&:not(:last-child)]:border-b border-gray-300"
+              data-text="{{ text }}"
               _="on click 
-                  put `${event.target.innerText}` into value of #title 
+                  log my.dataset.text
+                  put my.dataset.text into value of #title 
                   add .hidden to #suggestions
                 end"
             >
-              <div class="flex">
+              <div class="flex gap-1">
                 {% for substring in suggestion %}
                   <span {% if substring.highlight  %}class="bg-yellow-300"{% endif %}>{{ substring.text }}</span>
                 {% endfor %}
               </div>
             </li>
+            {% endwith %}
         {% endfor %}
       </ul>
     </div>

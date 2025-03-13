@@ -1,16 +1,5 @@
 from playwright.sync_api import expect
-from datetime import datetime, timedelta
-from playwright.sync_api import expect
-import django
-from django.conf import settings
 from django.template.loader import get_template
-import pytest
-
-settings.configure(TEMPLATES=[{
-    'BACKEND': 'django.template.backends.django.DjangoTemplates',
-    'DIRS': ['todos/templates'],
-}], INSTALLED_APPS=['django.contrib.humanize'])
-django.setup()
 
 def test_successful_login(page):
     def handle_login_route(route):
@@ -158,3 +147,28 @@ def test_ensure_button_and_input_are_disabled_when_submitting(page):
     expect(page.get_by_role("button", name="login", exact=False)).to_be_disabled()
     
     page.wait_for_selector("text=Todo")
+
+def test_login_error(page):
+    def handle_login_route(route):
+        if route.request.method == 'GET':
+            route.fulfill(
+                status=200,
+                content_type='text/html',
+                body=get_template('login.html').render({'screen': True})
+            )
+        elif route.request.method == 'POST':
+            route.fulfill(
+                status=404,
+                content_type='text/html',
+                body='Invalid username or password'
+            )
+    page.route("**/login", handle_login_route)
+    
+    page.goto("http://localhost:3000/login")
+    
+    # Try to login with invalid credentials
+    page.get_by_label("Username").fill("wronguser")
+    page.get_by_label("Password").fill("wrongpass")
+    page.get_by_role("button", name="Login").click()
+    
+    expect(page.get_by_text("Invalid username or password")).to_be_visible()
