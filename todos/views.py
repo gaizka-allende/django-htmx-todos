@@ -12,9 +12,15 @@ from django.http.request import QueryDict
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth import update_session_auth_hash
+from django.utils import translation
 
 @login_required(login_url='/login')
 def index(request):
+    # Set language from cookie if present
+    language = request.COOKIES.get('django_language')
+    if language:
+        translation.activate(language)
+
     uncompletedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=0)
     completedTodos = Todos.objects.filter(user=request.user).order_by('-created_modified').filter(completed=1)  
     return render(request, 'index.html', {

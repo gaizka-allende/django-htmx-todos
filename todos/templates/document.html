@@ -42,15 +42,15 @@
     {% block title %}{% endblock %}
   </head>
   <body class="bg-white dark:bg-slate-800 text-slate-800 dark:text-white">
-    <header class="flex justify-end m-2">
+    <header class="flex justify-end m-2" id="header">
       <div>
         <select
           name="language"
           id="language"
           hx-get="/"
           hx-trigger="change"
-          hx-select="#screen"
-          hx-target="#screen"
+          hx-select="#screen, #header"
+          hx-target="#screen, #header"
           hx-swap="outerHTML"
           hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
           _="
