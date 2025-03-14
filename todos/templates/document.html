@@ -47,21 +47,30 @@
         <select
           name="language"
           id="language"
-          hx-get="/"
-          hx-trigger="change"
-          hx-select="#screen, #header"
-          hx-target="#screen, #header"
-          hx-swap="outerHTML"
-          hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
           _="
           on change 
             if event.target.value equals '' 
               halt the event
             else
-              log event.target.value
               set cookies.django_language to event.target.value
+              js
+                async function updateContent() {
+                  const response = await fetch('/');
+                  const text = await response.text();
+                  const parser = new DOMParser();
+                  const doc = parser.parseFromString(text, 'text/html');
+                  const newScreen = doc.querySelector('#screen');
+                  document.querySelector('#screen').outerHTML = newScreen.outerHTML;
+                  
+                  // Instead of replacing header, just update the content we need
+                  const newLangSelect = doc.querySelector('#language');
+                  const newThemeSelect = doc.querySelector('#theme');
+                  document.querySelector('#language').innerHTML = newLangSelect.innerHTML;
+                  document.querySelector('#theme').innerHTML = newThemeSelect.innerHTML;
+                }
+                updateContent();
+              end
             end
-            
           end
         "
         >
