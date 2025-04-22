@@ -1,0 +1,13 @@
+services:
+  todos:
+    build: .
+    container_name: todos
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app
+      - ./db:/app/db
+    env_file:
+      - .env
+    user: "${UID}:${GID}"  

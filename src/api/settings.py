@@ -17,10 +17,10 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-SECRET = os.getenv("SECRET")
+SECRET = os.getenv("DJANGO_SECRET_KEY")
 
 if SECRET == None:
-    raise Exception("SECRET not found in .env file")
+    raise Exception("DJANGO_SECRET_KEY not found in .env file")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,14 +31,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=cldztbc4jg&xl0!x673!*v2_=p$$eu)=7*f#d0#zs$44xx-h^'
-# The session data will be stored using Django’s tools for cryptographic signing and the SECRET_KEY setting
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'default-key-for-dev')
+# The session data will be stored using Django's tools for cryptographic signing and the SECRET_KEY setting
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app', 'localhost', '.allende.org']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -158,3 +158,9 @@ LANGUAGES = [
 ]
 
 LOCALE_PATHS = [BASE_DIR / 'locale']
+
+# CSRF settings
+CSRF_TRUSTED_ORIGINS = [origin for origin in os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', '').split(',') if origin]
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -11,20 +11,17 @@ from django.contrib.auth.models import User
 
 
 class Suggestions(models.Model):
-    title = models.CharField(blank=True, null=True, max_length=255)
+    title = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'suggestions'
 
 
 class Todos(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
-    title = models.CharField(blank=True, null=True, max_length=255)
-    #completed = models.IntegerField(default=0, validators=[MaxvalueValidator(1), MinvalueValidator(0)]) 
-    completed = models.IntegerField(default=0) 
+    title = models.CharField(max_length=255, blank=True, null=True)
+    completed = models.IntegerField(default=0)
     created_modified = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'todos'
