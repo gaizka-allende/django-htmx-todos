@@ -1,47 +1,54 @@
 {% load humanize %} {% load i18n %}
-<div class="item flex row items-center mb-2">
-  <input
-    role="checkbox"
-    type="checkbox"
-    class="mr-2"
-    id="checkbox_{{todo.id}}"
-    name="checkbox_{{todo.id}}"
-    hx-patch="/todo/{{todo.id}}"
-    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-    hx-target="#todos"
-    hx-swap="outerHTML"
-    value="completed"
-    {% if todo.completed %}checked{% endif %}
-  />
-  <input
-    data-testid="todo-item-input"
-    role="textbox"
-    id="textbox_{{todo.id}}"
-    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2 {% if todo.completed %} opacity-50 {% endif %}"
-    value="{{todo.title}}"
-    hx-put="/todo/{{todo.id}}"
-    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-    name="textbox_{{todo.id}}"
-    {% if todo.completed %}disabled{% endif %}
-    _="on keydown
-  if event.key == 'Enter'
-      -- prevent the default form submission and trigger the put request
-      event.preventDefault()
-      trigger change 
-    "
-  />
-  {% if not todo.completed %}
-  <button
-    class="font-medium py-1 px-4 my-1 rounded-lg text-lg border bg-gray-100 text-gray-600 mr-2"
-    hx-delete="/todo/{{todo.id}}"
-    hx-target="#todos"
-    hx-swap="outerHTML"
-    hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
-  >
-    {% translate 'Delete' %}
-  </button>
-  {% endif %}
-  <span class="mx-2 text-sm {% if todo.completed %}opacity-500{% endif %}">
+<div class="item flex flex-col mb-2 gap-2">
+  <div class="w-full flex items-center gap-2">
+    <input
+      role="checkbox"
+      type="checkbox"
+      class="shrink-0"
+      id="checkbox_{{todo.id}}"
+      name="checkbox_{{todo.id}}"
+      hx-patch="/todo/{{todo.id}}"
+      hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+      hx-target="#todos"
+      hx-swap="outerHTML"
+      value="completed"
+      {% if todo.completed %}checked{% endif %}
+    />
+    <input
+      data-testid="todo-item-input"
+      role="textbox"
+      id="textbox_{{todo.id}}"
+      class="flex-1 min-w-0 font-medium py-1 px-4 rounded-lg text-lg border bg-gray-100 text-gray-600 {% if todo.completed %} opacity-50 {% endif %}"
+      value="{{todo.title}}"
+      hx-put="/todo/{{todo.id}}"
+      hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+      name="textbox_{{todo.id}}"
+      {% if todo.completed %}disabled{% endif %}
+      _="on keydown
+    if event.key == 'Enter'
+        -- prevent the default form submission and trigger the put request
+        event.preventDefault()
+        trigger change 
+      "
+    />
+    {% if not todo.completed %}
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      class="w-5 h-5 shrink-0 text-gray-600 hover:text-gray-800 cursor-pointer"
+      viewBox="0 0 16 16" 
+      fill="currentColor"
+      hx-delete="/todo/{{todo.id}}"
+      hx-target="#todos"
+      hx-swap="outerHTML"
+      hx-headers='js:{"X-CSRFToken": document.cookie.split("; ").find((row) => row.startsWith("csrftoken="))?.split("=")[1]}'
+      title="{% translate 'Delete' %}"
+    >
+      <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+      <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+    </svg>
+    {% endif %}
+  </div>
+  <span class="text-sm text-gray-500 pl-8 {% if todo.completed %}opacity-50{% endif %}">
     {{ todo.created_modified|naturaltime }}
   </span>
 </div>

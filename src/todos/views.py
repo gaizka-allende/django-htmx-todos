@@ -105,27 +105,26 @@ def updateTodo(request, id):
                 
 @login_required(login_url='/login')
 def suggestions(request):
-  title = request.GET.get('title')
-  suggestions = Suggestions.objects.filter(title__icontains=title)
-  if suggestions is None:
-    return HttpResponse('')
-  else:
-    #todo fix when typing a space in the search bar
-    suggestions = list(map(lambda suggestion: suggestion.title, 
-                           Suggestions.objects.filter(title__icontains=title)))
-    suggestionsFromTodos = list(map(lambda suggestion: suggestion.title,
-                                    Todos.objects.filter(title__icontains=title))) 
-    suggestions = suggestions + suggestionsFromTodos
-    suggestions = list(dict.fromkeys(suggestions))
-    def highlightSuggestionMatch(suggestion):
-      if suggestion.find(title) == -1:
-        return [{'text': title}]
-      return [
-        { 'text': suggestion[0: suggestion.find(title)]},
-        { 'text': title, 'highlight': True},
-        { 'text': suggestion[suggestion.find(title) + len(title):]}
-      ]
-    return render(request, 'suggestions.html', {'suggestions': map(highlightSuggestionMatch,  suggestions)})
+    title = request.GET.get('title')
+    suggestions = Suggestions.objects.filter(title__icontains=title)
+    if suggestions is None:
+        return HttpResponse('')
+    else:
+        suggestions = list(map(lambda suggestion: suggestion.title, 
+                               Suggestions.objects.filter(title__icontains=title)))
+        suggestionsFromTodos = list(map(lambda suggestion: suggestion.title,
+                                        Todos.objects.filter(title__icontains=title))) 
+        suggestions = suggestions + suggestionsFromTodos
+        suggestions = list(dict.fromkeys(suggestions))
+        def highlightSuggestionMatch(suggestion):
+            if suggestion.find(title) == -1:
+                return [{'text': title}]
+            return [
+                { 'text': suggestion[0: suggestion.find(title)]},
+                { 'text': title, 'highlight': True},
+                { 'text': suggestion[suggestion.find(title) + len(title):]}
+            ]
+        return render(request, 'suggestions.html', {'suggestions': map(highlightSuggestionMatch,  suggestions)})
 
 @csrf_exempt 
 def login_view(request):
